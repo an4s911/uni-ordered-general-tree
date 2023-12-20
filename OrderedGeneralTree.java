@@ -162,6 +162,7 @@ public class OrderedGeneralTree<E> extends AbstractTree<E> {
 
     /**
      * Returns the last child position of a given position in the tree.
+     * (Helper method)
      *
      * @param p the position in the tree
      * @return the last child position of the given position, or null if there are
@@ -206,15 +207,16 @@ public class OrderedGeneralTree<E> extends AbstractTree<E> {
      * @return the newly created child node
      */
     public Position<E> addChild(Position<E> p, E e) {
-        Node<E> newNode = createNode(e, validate(p), null, null);
+        Node<E> pNode = validate(p);
+        Node<E> newNode = createNode(e, pNode, null, null);
 
         // if p has no children then set p's firstChild to the new node
-        if (validate(p).firstChild == null) {
-            validate(p).setFirstChild(newNode);
+        if (pNode.firstChild == null) {
+            pNode.setFirstChild(newNode);
         } else {
             // otherwise set p's last child's nextSibling to the new node
-            Position<E> lastChild = getLastChild(p);
-            validate(lastChild).setNextSibling(newNode);
+            Node<E> lastChildOfP = validate(getLastChild(p));
+            lastChildOfP.setNextSibling(newNode);
         }
 
         size++;
@@ -236,32 +238,38 @@ public class OrderedGeneralTree<E> extends AbstractTree<E> {
         }
 
         Position<E> parent = parent(p);
+        Node<E> parentNode = validate(parent);
 
         // walk the children of the parent
         Position<E> walk = firstChild(parent);
 
         // If p is the first child
         if (walk == p) {
+            Node<E> nextSiblingOfP = validate(nextSibling(p));
 
-            // If p doesn't have a children
-            if (validate(p).firstChild == null) {
+            // If p doesn't have children
+            if (firstChild(p) == null) {
                 // Set p's parent's firstChild to the nextSibling of p
-                validate(parent).setFirstChild(validate(nextSibling(p)));
+                parentNode.setFirstChild(nextSiblingOfP);
             } else {
-                // Set p's last child's nextSibling to the nextSibling of p and set the
-                // firstChild of the parent to the firstChild of p
-                Position<E> lastChildP = getLastChild(p);
-                validate(lastChildP).setNextSibling(validate(nextSibling(p)));
-                validate(parent).setFirstChild(validate(firstChild(p)));
+                // Set p's last child's nextSibling to the nextSibling of p
+                Node<E> lastChildOfP = validate(getLastChild(p));
+                lastChildOfP.setNextSibling(nextSiblingOfP);
+
+                // and set the firstChild of the parent to the firstChild of p
+                Node<E> firstChildOfP = validate(firstChild(p));
+                parentNode.setFirstChild(firstChildOfP);
             }
         } else {
             // Find the sibling that is before p
             while (nextSibling(walk) != p) {
                 walk = nextSibling(walk);
             }
+            Node<E> walkNode = validate(walk);
 
             // Set the previous sibling's nextSibling to the firstChild of p
-            validate(walk).setNextSibling(validate(firstChild(p)));
+            Node<E> firstChildOfP = validate(firstChild(p));
+            walkNode.setNextSibling(firstChildOfP);
         }
 
         // Store the element before resetting the position
