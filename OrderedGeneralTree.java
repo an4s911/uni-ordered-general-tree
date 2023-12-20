@@ -240,15 +240,15 @@ public class OrderedGeneralTree<E> extends AbstractTree<E> {
         Position<E> parent = parent(p);
         Node<E> parentNode = validate(parent);
 
-        // walk the children of the parent
-        Position<E> walk = firstChild(parent);
-
         // Get next sibling of p
         Position<E> nextSiblingOfP = nextSibling(p);
         Node<E> nextSiblingOfPNode = null;
         if (nextSiblingOfP != null) {
             nextSiblingOfPNode = validate(nextSibling(p));
         }
+
+        // walk the children of the parent
+        Position<E> walk = firstChild(parent);
 
         // If p is the first child
         if (walk == p) {
