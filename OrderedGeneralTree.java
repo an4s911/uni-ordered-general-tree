@@ -243,18 +243,24 @@ public class OrderedGeneralTree<E> extends AbstractTree<E> {
         // walk the children of the parent
         Position<E> walk = firstChild(parent);
 
+        // Get next sibling of p
+        Position<E> nextSiblingOfP = nextSibling(p);
+        Node<E> nextSiblingOfPNode = null;
+        if (nextSiblingOfP != null) {
+            nextSiblingOfPNode = validate(nextSibling(p));
+        }
+
         // If p is the first child
         if (walk == p) {
-            Node<E> nextSiblingOfP = validate(nextSibling(p));
 
             // If p doesn't have children
             if (firstChild(p) == null) {
                 // Set p's parent's firstChild to the nextSibling of p
-                parentNode.setFirstChild(nextSiblingOfP);
+                parentNode.setFirstChild(nextSiblingOfPNode);
             } else {
                 // Set p's last child's nextSibling to the nextSibling of p
                 Node<E> lastChildOfP = validate(getLastChild(p));
-                lastChildOfP.setNextSibling(nextSiblingOfP);
+                lastChildOfP.setNextSibling(nextSiblingOfPNode);
 
                 // and set the firstChild of the parent to the firstChild of p
                 Node<E> firstChildOfP = validate(firstChild(p));
@@ -268,8 +274,26 @@ public class OrderedGeneralTree<E> extends AbstractTree<E> {
             Node<E> walkNode = validate(walk);
 
             // Set the previous sibling's nextSibling to the firstChild of p
-            Node<E> firstChildOfP = validate(firstChild(p));
-            walkNode.setNextSibling(firstChildOfP);
+            Position<E> firstChildOfP = firstChild(p);
+            if (firstChildOfP != null) {
+                Node<E> firstChildOfPNode = validate(firstChildOfP);
+                walkNode.setNextSibling(firstChildOfPNode);
+
+                // Set the nextSibling of the last child of p to the nextSibling of p
+                Node<E> lastChildOfPNode = validate(getLastChild(p));
+                lastChildOfPNode.setNextSibling(nextSiblingOfPNode);
+
+                // Set the parent of the children of p to be parent of p
+                while (firstChildOfP != null) {
+                    firstChildOfPNode = validate(firstChildOfP);
+                    firstChildOfPNode.setParent(parentNode);
+                    firstChildOfP = nextSibling(firstChildOfPNode);
+                }
+
+            } else {
+                walkNode.setNextSibling(nextSiblingOfPNode);
+            }
+
         }
 
         // Store the element before resetting the position

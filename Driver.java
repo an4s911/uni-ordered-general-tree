@@ -5,8 +5,9 @@ public class Driver {
 
         Position<String> A = tree.addRoot("A");
         Position<String> B = tree.addChild(A, "B");
-        tree.addChild(A, "C");
+        Position<String> C = tree.addChild(A, "C");
         Position<String> D = tree.addChild(A, "D");
+        Position<String> X = tree.addChild(C, "X");
 
         tree.addChild(B, "E");
         tree.addChild(B, "F");
@@ -15,6 +16,16 @@ public class Driver {
         tree.addChild(D, "Q");
 
         System.out.println("-".repeat(20) + " DISPLAY TREE " + "-".repeat(20));
+        System.out.println("Size: " + tree.size());
+        tree.displayTree();
+
+        System.out.println("-".repeat(20) + " REMOVE X " + "-".repeat(20));
+        tree.remove(X);
+        System.out.println("Size: " + tree.size());
+        tree.displayTree();
+
+        System.out.println("-".repeat(20) + " REMOVE C " + "-".repeat(20));
+        tree.remove(C);
         System.out.println("Size: " + tree.size());
         tree.displayTree();
 
